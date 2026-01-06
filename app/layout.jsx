@@ -1,6 +1,8 @@
 
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import {Inter} from 'next/font/google'
+
 
 const interFont = Inter({
   weight:['400','500','600','700','800'],
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${interFont.className} antialiased`}
       >
+        <ToastContainer />
         {children}
       </body>
     </html>
