@@ -6,7 +6,7 @@ const ButtonLoading = ({type, text, loading, onClick,className,...props}) => {
   return (
     <Button 
     size="sm" 
-    variant="outline" 
+    
     type={type} 
     disabled={loading} 
     onClick={onClick} 
@@ -17,6 +17,6 @@ const ButtonLoading = ({type, text, loading, onClick,className,...props}) => {
     </Button>
   )
 }
-//"bg-linear-to-r from-yellow-300 to-amber-500 hover:from-amber-600 hover:to-yellow-600"
+
 
 export default ButtonLoading
