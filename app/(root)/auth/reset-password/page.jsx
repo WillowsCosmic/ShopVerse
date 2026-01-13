@@ -25,11 +25,13 @@ import { WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/toast'
 import OtpVerification from '@/components/Application/OtpVerification'
+import UpdatePassword from '@/components/Application/updatePassword'
 
 const ResetPassword = () => {
     const [emailVerificationLoading, setEmailVerificationLoading] = useState(false)
     const [otpVerificationLoading, setOtpVerificationLoading] = useState(false)
     const [otpEmail, setOtpEmail] = useState()
+    const [isOtpVerified, setIsOtpVerified] = useState(false)
     const formSchema = zSchema.pick({
         email: true
     })
@@ -40,26 +42,41 @@ const ResetPassword = () => {
         }
     })
     const handleEmailVerification = async (values) => {
+        try {
+            setEmailVerificationLoading(true)
 
+            const { data: sendOtpResponse } = await axios.post('/api/auth/reset-password/send-otp', values)
+
+
+            if (!sendOtpResponse.success) {
+                throw new Error(sendOtpResponse.message)
+            }
+            setOtpEmail(values.email)
+            form.reset()
+            showToast('success', sendOtpResponse.message)
+
+        } catch (error) {
+
+            showToast('error', error.message || 'Login failed')
+        } finally {
+            setEmailVerificationLoading(false)
+        }
     }
     const handleOtpVerification = async (values) => {
         try {
             setOtpVerificationLoading(true)
 
-            const { data: otpResponse } = await axios.post('/api/auth/verify-otp', values)
+            const { data: otpResponse } = await axios.post('/api/auth/reset-password/verify-otp', values)
 
 
             if (!otpResponse.success) {
                 throw new Error(otpResponse.message)
             }
-            setOtpEmail('')
-            form.reset()
-            showToast('success', otpResponse.message)
 
-            dispatch(login(otpResponse.data))
+            showToast('success', otpResponse.message)
+            setIsOtpVerified(true)
 
         } catch (error) {
-
             showToast('error', error.message || 'Login failed')
         } finally {
             setOtpVerificationLoading(false)
@@ -81,7 +98,7 @@ const ResetPassword = () => {
                         </div>
                         <div className='mt-3'>
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(handleLoginSubmit)} className="mt-6">
+                                <form onSubmit={form.handleSubmit(handleEmailVerification)} className="mt-6">
                                     <div className='mb-5'>
                                         <FormField
                                             control={form.control}
@@ -112,7 +129,13 @@ const ResetPassword = () => {
                         </div>
                     </>
                     :
-                    <OtpVerification email={otpEmail} onSubmit={handleOtpVerification} loading={otpVerificationLoading} />
+                    <>
+                        {!isOtpVerified ?
+                            <OtpVerification email={otpEmail} onSubmit={handleOtpVerification} loading={otpVerificationLoading} /> 
+                            :
+                            <UpdatePassword email={otpEmail}/>
+                        }
+                    </>
                 }
 
             </CardContent>

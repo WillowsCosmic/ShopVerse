@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,17 +22,17 @@ import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { z } from 'zod'
-import Link from 'next/link'
-import { WEBSITE_LOGIN, WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/toast'
+import { useRouter } from 'next/navigation'
+import { WEBSITE_LOGIN } from '@/routes/WebsiteRoute'
 
-const RegisterPage = () => {
+const UpdatePassword = ({email}) => {
+    const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [isTypePassword, setIsTypePassword] = useState(true)
     const formSchema = zSchema.pick({
-      name:true,
-      email: true,
+        email:true,
       password:true
     }).extend({
       confirmPassword:z.string()
@@ -45,25 +44,24 @@ const RegisterPage = () => {
     const form = useForm({
       resolver: zodResolver(formSchema),
       defaultValues: {
-        name:"",
-        email: "",
+        email:email,
         password: "",
         confirmPassword: "",
       },
     })
     
-    const handleRegisterSubmit = async (values) => {
+    const handlePasswordUpdate = async (values) => {
         try {
           setLoading(true)
-          const {data: registerResponse} = await axios.post('/api/auth/register', values)
+          const {data: passwordUpdate} = await axios.put('/api/auth/reset-password/update-password', values)
           
           
-          if(!registerResponse.success){
-            throw new Error(registerResponse.message)
+          if(!passwordUpdate.success){
+            throw new Error(passwordUpdate.message)
           }
           form.reset()
-          showToast('success',registerResponse.message)
-          
+          showToast('success',passwordUpdate.message)
+          router.push(WEBSITE_LOGIN)
         } catch (error) {
           showToast('error',error.message)
         } finally {
@@ -72,48 +70,16 @@ const RegisterPage = () => {
     }
     
     return (
-      <Card className="w-112.5 bg-white/90 backdrop-blur-sm shadow-2xl border border-amber-100">
-        <CardContent>
-          <div className='flex justify-center'>
-            <Image src={Logo.src} alt="logo" width={Logo.width} height={Logo.height} className='max-w-38.5' />
-          </div>
+      
+        <div>
           <div className='text-center'>
-            <h1 className="text-xl m-3 font-semibold">Create an Account</h1>
-            <p className='text-gray-400 text-sm'>Create your new account by filling out the form</p>
+            <h1 className="text-xl m-3 font-semibold">Update Password</h1>
+            <p className='text-gray-400 text-sm'>Create your new password by filling out the form</p>
           </div>
           <div className='mt-3'>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleRegisterSubmit)} className="mt-6">
-                <div className='mb-5'>
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-yellow-800">Name</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Enter your name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className='mb-5'>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-yellow-800">Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="example@gmail.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+              <form onSubmit={form.handleSubmit(handlePasswordUpdate)} className="mt-6">
+                
                 <div className='mb-6'>
                   <FormField
                     control={form.control}
@@ -159,20 +125,14 @@ const RegisterPage = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <ButtonLoading loading={loading} type="Submit" text="Create an Account" className="w-full cursor-pointer bg-linear-to-r hover:from-yellow-200 hover:to-amber-200 transition-all duration-200 from-amber-300 to-yellow-300" />
+                  <ButtonLoading loading={loading} type="Submit" text="Update Password" className="w-full cursor-pointer bg-linear-to-r hover:from-yellow-200 hover:to-amber-200 transition-all duration-200 from-amber-300 to-yellow-300" />
                 </div>
-                <div className="text-center">
-                  <div className='flex justify-center items-center gap-1'>
-                    <p>Already have an account?</p>
-                    <Link href={WEBSITE_LOGIN} className='text-primary underline'>Login!</Link>
-                  </div>
-                </div>
+                
               </form>
             </Form>
           </div>
-        </CardContent>
-      </Card>
+        </div>
     )
 }
 
-export default RegisterPage
+export default UpdatePassword

@@ -23,14 +23,17 @@ import { useForm } from "react-hook-form"
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { z } from 'zod'
 import Link from 'next/link'
-import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
+import { WEBSITE_HOME, WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/toast'
 import OtpVerification from '@/components/Application/OtpVerification'
 import { useDispatch } from 'react-redux'
 import { login } from '@/store/reducer/authReducer'
+import { useRouter } from 'next/navigation'
+
 
 const Login = () => {
+  const router = useRouter()
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [isTypePassword, setIsTypePassword] = useState(true)
@@ -64,6 +67,7 @@ const Login = () => {
       showToast('success', otpResponse.message)
 
       dispatch(login(otpResponse.data))
+      router.push(WEBSITE_HOME)
   
     } catch (error) {
       

@@ -21,11 +21,6 @@ export async function POST(request) {
         }
         const { email } = validateData.data
 
-        // const getOtpData = await OTPModel.findOne({ email, otp })
-        // if (!getOtpData) {
-        //     return response(false, 404, 'Invalid or expired otp')
-        // }
-
         const getUser = await UserModel.findOne({ deletedAt: null, email }).lean()
         if (!getUser) {
             return response(false, 404, 'User not found')
