@@ -1,13 +1,15 @@
 
-import { ToastContainer } from "react-toastify";
 import "./globals.css";
-import {Inter} from 'next/font/google'
+import { Inter } from 'next/font/google'
+import GlobalProviders from "@/components/Application/GlobalProviders";
+import { Toaster } from "@/components/ui/sonner";
+
 
 
 const interFont = Inter({
-  weight:['400','500','600','700','800'],
-  subsets:['latin'],
-  display:'swap'
+  weight: ['400', '500', '600', '700', '800'],
+  subsets: ['latin'],
+  display: 'swap'
 })
 
 export const metadata = {
@@ -21,8 +23,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${interFont.className} antialiased`}
       >
-        <ToastContainer />
-        {children}
+        <GlobalProviders>
+          {children}
+          <Toaster />
+        </GlobalProviders>
       </body>
     </html>
   );

@@ -56,7 +56,7 @@ export async function POST(request) {
 
         await getOtpData.deleteOne()
 
-        return response(true, 200, 'Login Successful',loggedInUserData)
+        return response(true, 200, 'Otp Verified')
 
     } catch (error) {
         return catchError(error)

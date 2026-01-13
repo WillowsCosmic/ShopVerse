@@ -23,12 +23,15 @@ import { useForm } from "react-hook-form"
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { z } from 'zod'
 import Link from 'next/link'
-import { WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
+import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/toast'
 import OtpVerification from '@/components/Application/OtpVerification'
+import { useDispatch } from 'react-redux'
+import { login } from '@/store/reducer/authReducer'
 
 const Login = () => {
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [isTypePassword, setIsTypePassword] = useState(true)
   const [otpVerificationLoading, setOtpVerificationLoading] = useState(false)
@@ -59,6 +62,8 @@ const Login = () => {
       setOtpEmail('')
       form.reset()
       showToast('success', otpResponse.message)
+
+      dispatch(login(otpResponse.data))
   
     } catch (error) {
       
@@ -152,7 +157,7 @@ const Login = () => {
                       <Link href={WEBSITE_REGISTER} className='text-primary underline'>Create an account!</Link>
                     </div>
                     <div className='mt-3'>
-                      <Link href="" className='text-primary underline'>Forgot password?</Link>
+                      <Link href={WEBSITE_RESETPASSWORD} className='text-primary underline'>Forgot password?</Link>
                     </div>
                   </div>
                 </form>
