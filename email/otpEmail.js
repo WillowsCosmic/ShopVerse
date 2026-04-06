@@ -1,3 +1,4 @@
+import thumbsUp from "@/public/assets/email/order-conf-icon.png"
 export const otpEmail = (otp) => {
     const html = `
   <!DOCTYPE html>
@@ -125,7 +126,7 @@ export const otpEmail = (otp) => {
                                                                       style="line-height:10px">
                                                                       <div style="max-width: 250px;"><img
                                                                               alt="reset-password" height="auto"
-                                                                              src="https://res.cloudinary.com/do7xdfl3y/image/upload/v1737487850/next-ecommerce/rb_27348_hfzgxd.png"
+                                                                              src="${thumbsUp}"
                                                                               style="display: block; height: auto; border: 0; width: 100%;"
                                                                               title="reset-password" width="250" /></div>
                                                                   </div>

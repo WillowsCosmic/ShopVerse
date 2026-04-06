@@ -23,18 +23,20 @@ import { useForm } from "react-hook-form"
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import { z } from 'zod'
 import Link from 'next/link'
-import { WEBSITE_HOME, WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
+import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/toast'
 import OtpVerification from '@/components/Application/OtpVerification'
 import { useDispatch } from 'react-redux'
 import { login } from '@/store/reducer/authReducer'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
 
 
 const Login = () => {
   const router = useRouter()
   const dispatch = useDispatch()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [isTypePassword, setIsTypePassword] = useState(true)
   const [otpVerificationLoading, setOtpVerificationLoading] = useState(false)
@@ -52,13 +54,13 @@ const Login = () => {
       password: "",
     },
   })
-  const handleOtpVerification = async(values) => {
+  const handleOtpVerification = async (values) => {
     try {
       setOtpVerificationLoading(true)
-     
+
       const { data: otpResponse } = await axios.post('/api/auth/verify-otp', values)
-      
-      
+
+
       if (!otpResponse.success) {
         throw new Error(otpResponse.message)
       }
@@ -67,10 +69,14 @@ const Login = () => {
       showToast('success', otpResponse.message)
 
       dispatch(login(otpResponse.data))
-      router.push(WEBSITE_HOME)
-  
+      if (searchParams.has('callback')) {
+        router.push(searchParams.get('callback'))
+      } else {
+        otpResponse.data.role === 'admin' ? router.push(ADMIN_DASHBOARD) : router.push(USER_DASHBOARD)
+      }
+
     } catch (error) {
-      
+
       showToast('error', error.message || 'Login failed')
     } finally {
       setOtpVerificationLoading(false)
@@ -79,25 +85,25 @@ const Login = () => {
   const handleLoginSubmit = async (values) => {
     try {
       setLoading(true)
-     
+
       const { data: loginResponse } = await axios.post('/api/auth/login', values)
-      
-      
+
+
       if (!loginResponse.success) {
         throw new Error(loginResponse.message)
       }
       setOtpEmail(values.email)
       form.reset()
       showToast('success', loginResponse.message)
-  
+
     } catch (error) {
-      
+
       showToast('error', error.message || 'Login failed')
     } finally {
       setLoading(false)
     }
   }
-  
+
   return (
     <Card className="w-112.5 bg-white/90 backdrop-blur-sm shadow-2xl border border-amber-100">
       <CardContent>
